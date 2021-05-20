@@ -1,4 +1,10 @@
 
+
+// detect if video.muted???
+// allow listen in wallpaper video?
+// allow set general volume for every page???
+// issue: sound break when leave page some minutes?
+
 (()=>{
 
 	const classVolumeBtn = '.mute-icon.browse-mode';
@@ -6,6 +12,7 @@
 	const classVideoPlayer = '.video-player'
 	const idExtVolumeDiv = 'extension-volume-div';
 	const classExtVolumeInput = 'extension-volume-input';
+	let lastVolumeRate = 0.5;
 
 	let replaceVolume = ()=>{
 
@@ -51,7 +58,11 @@
 					btnVolume.parentNode.appendChild(div.firstChild);
 
 
-
+					// set lastVolume 
+					let players = document.querySelectorAll(classVideoPlayer);
+					for(let player of players) {
+						player.volume = lastVolumeRate;
+					}
 
 
 				}
@@ -77,11 +88,16 @@
 			let listVol = document.getElementsByClassName(classExtVolumeInput);
 			for(let vol of listVol) {
 				vol.oninput = (event)=>{
+					lastVolumeRate = event.target.value/ event.target.max;
 					let players = document.querySelectorAll(classVideoPlayer);
 					for(let player of players) {
-						player.volume = event.target.value/ event.target.max;
+						player.volume = lastVolumeRate;
 					}
 				};
+
+				// sync with last volume
+				let value = lastVolumeRate * 100;
+				vol.value = value;
 			}
 			addHandler();
 		}, 200); 
